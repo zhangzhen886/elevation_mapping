@@ -1,0 +1,85 @@
+<launch>
+
+    <node pkg="location" type="locationV2" name="locationV2"  output="screen">
+        <param name="mapPCDFileName" value="$(find location)/map/fps6/yunshenchu.pcd"/>
+        <param name="lidarName" value="velodyne_points"/>
+        <param name="enableSwitchLidarData" value="false"/>
+        <param name="switchBufferSize" value="4"/>
+        <param name="enablePublishGlobalDenseMap" value="false"/>
+    </node>
+
+    <node pkg="tf" type="static_transform_publisher" name="link2_broadcaster" args="0.0 0 0.59 0 0 0 base_link velodyne 50" />
+    <node pkg="tf" type="static_transform_publisher" name="link3_broadcaster" args="0.0 0 0.54 0 0 0 base_link imu 50" />
+    <node pkg="tf" type="static_transform_publisher" name="link4_broadcaster" args="0.0 0 0.0 0 0 0 map odom 50" />
+
+    <node name="MapServer" pkg="map_server" type="map_server" output="screen" args="$(find location)/map/fps6/yunshenchu.yaml"/>
+
+    <node pkg="detection" type="detection" name="detection" output="screen">
+        <param name="cameraFrame" value="AreoCameraFront_depth_optical_frame"/>
+<!--        <param name="roll" value="-105"/>
+        <param name="pitch" value="0.0"/>
+        <param name="yaw" value="-90"/>-->
+        <param name="FilterFieldName" value="z"/>
+        <param name="setFilterLimitsUp" value="3.5"/>
+        <param name="setFilterLimitsDown" value="0.0"/>
+    </node>
+
+<!--    <node pkg="detection" type="tf_pose_odom2camera" name="tf_pose_odom2camera" output="screen">
+        <param name="cameraFrame" value="AreoCameraFront_depth_optical_frame"/>
+    </node>-->
+
+    <!-- Elevation mapping node -->
+    <node pkg="elevation_mapping" type="elevation_mapping" name="elevation_mapping" output="screen">
+        <param name="length_in_x" value="25.0"/>
+        <param name="length_in_y" value="25.0"/>
+        <param name="resolution" value="0.05"/>
+        <param name="threshold" value="0.35"/>
+<!--        <param name="min_variance" value="0.000009"/>-->
+        <param name="max_variance" value="0.04"/>
+<!--        <param name="mahalanobis_distance_threshold" value="2.0"/>-->
+<!--        <param name="min_horizontal_variance" value="0.09"/>-->
+<!--        <param name="max_horizontal_variance" value="0.5"/>-->
+        <param name="robot_pose_cache_size" value="200"/>
+        <param name="min_update_rate" value="1.0"/>
+        <param name="fused_map_publishing_rate" value="3.0"/>
+
+        <param name="point_cloud_topic" value="/camera_point"/>
+        <param name="robot_pose_with_covariance_topic" value="/odom_pose"/>
+        <param name="base_frame_id" value="base_link"/>
+        <param name="map_frame_id" value="map"/>
+        <param name="track_point_frame_id" value="base_link"/>
+        <param name="sensor_frame_id" value="/AreoCameraFront_depth_optical_frame"/>
+        <param name="robot_base_frame_id" value="base_link"/>
+
+        <param name="enable_visibility_cleanup" value="false"/>
+        <param name="visibility_cleanup_rate" value="0.05"/>
+        <param name="scanning_duration" value="0.3"/>
+
+        <param name="sensor_processor/type" value="structured_light"/>
+        <param name="sensor_processor/cutoff_max_depth" value="3.5"/>
+        <param name="sensor_processor/cutoff_min_depth" value="0.0"/>
+        <param name="sensor_processor/normal_factor_a" value="0.000611"/>
+        <param name="sensor_processor/normal_factor_b" value="0.003587"/>
+        <param name="sensor_processor/normal_factor_c" value="0.3515"/>
+        <param name="sensor_processor/normal_factor_d" value="0"/>
+        <param name="sensor_processor/normal_factor_e" value="1"/>
+        <param name="sensor_processor/lateral_factor" value="0.01576"/>
+
+        <param name="sensor_processor/apply_voxelgrid_filter" value="false"/>
+        <param name="sensor_processor/voxelgrid_filter_size" value="0.01"/>
+    </node>
+
+    <!-- Launch visualizations for the resulting elevation map -->
+    <include file="$(find elevation_mapping_demos)/launch/visualization.launch" />
+
+    <!-- Launch RViz with the demo configuration -->
+<!--    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find elevation_mapping_demos)/rviz/elevation_map_visualization.rviz" />-->
+
+    <arg name="rviz" default="true" />
+    <param name="use_sim_time" value="true" />
+    <group if="$(arg rviz)">
+    <node launch-prefix="nice" pkg="rviz" type="rviz" name="rviz" args="-d $(find location)/rviz_cfg/ndt_matching.rviz" />
+    </group>
+
+
+</launch>

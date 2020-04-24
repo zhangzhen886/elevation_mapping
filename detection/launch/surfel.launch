@@ -1,0 +1,63 @@
+<launch>
+
+    <node pkg="location" type="locationV2" name="locationV2"  output="screen">
+        <param name="mapPCDFileName" value="$(find location)/map/fps6/yunshenchu.pcd"/>
+        <param name="lidarName" value="velodyne_points"/>
+        <param name="enableSwitchLidarData" value="false"/>
+        <param name="switchBufferSize" value="4"/>
+        <param name="enablePublishGlobalDenseMap" value="false"/>
+    </node>
+
+    <node pkg="tf" type="static_transform_publisher" name="link2_broadcaster" args="0.0 0 0.59 0 0 0 base_link velodyne 50" />
+    <node pkg="tf" type="static_transform_publisher" name="link3_broadcaster" args="0.0 0 0.54 0 0 0 base_link imu 50" />
+    <node pkg="tf" type="static_transform_publisher" name="link4_broadcaster" args="0.0 0 0.0 0 0 0 map odom 50" />
+
+    <node name="MapServer" pkg="map_server" type="map_server" output="screen" args="$(find location)/map/fps6/yunshenchu.yaml"/>
+
+    <node pkg="detection" type="detection" name="detection" output="screen">
+        <param name="cameraFrame" value="AreoCameraFront_depth_optical_frame"/>
+<!--        <param name="roll" value="-105"/>
+        <param name="pitch" value="0.0"/>
+        <param name="yaw" value="-90"/>-->
+        <param name="FilterFieldName" value="z"/>
+        <param name="setFilterLimitsUp" value="3.5"/>
+        <param name="setFilterLimitsDown" value="0.0"/>
+    </node>
+
+    <node pkg="surfel_fusion" type="surfel_fusion" name="surfel_fusion" clear_params="true" output="screen">
+
+      <!-- camera parameter -->
+      <param name="cam_width" value="1241" />
+      <param name="cam_height" value="376" />
+
+      <!--input image info-->
+      <param name="cam_fx" value="718.856" />
+      <param name="cam_cx" value="607.1928" />
+      <param name="cam_fy" value="718.856" />
+      <param name="cam_cy" value="185.2157" />
+
+      <!-- fusion parameter, all in meter -->
+      <param name="fuse_far_distence" value="30.0" />
+      <param name="fuse_near_distence" value="0.5" />
+
+      <!-- for deform the map -->
+      <param name="drift_free_poses" value="10" />
+
+      <!-- for data save -->
+      <!-- <param name="save_name" value="/home/wang/bag/surfel_fusion/results/kitti/kitti00_loop" /> -->
+
+      <remap from="~image" to="/AreoCameraFront/infra1/image_rect_raw" />
+      <remap from="~depth" to="/camera_point" />
+      <remap from="~loop_path" to="/orb_slam/path" />
+      <remap from="~this_pose" to="/odom_pose" />
+      <remap from="~loop_stamps" to="/orb_slam/loop" />
+    </node>
+
+    <arg name="rviz" default="true" />
+    <param name="use_sim_time" value="true" />
+    <group if="$(arg rviz)">
+    <node launch-prefix="nice" pkg="rviz" type="rviz" name="rviz" args="-d $(find location)/rviz_cfg/ndt_matching.rviz" />
+    </group>
+
+
+</launch>

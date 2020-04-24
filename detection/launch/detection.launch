@@ -1,0 +1,39 @@
+<launch>
+
+    <arg name="rviz" default="true" />
+    <param name="use_sim_time" value="true" />
+
+    <node pkg="location" type="locationV2" name="locationV2"  output="screen">
+        <param name="mapPCDFileName" value="$(find location)/map/yunshenchu.pcd"/>
+        <param name="lidarName" value="velodyne_points"/>
+        <param name="enableSwitchLidarData" value="false"/>
+        <param name="switchBufferSize" value="4"/>
+        <param name="enablePublishGlobalDenseMap" value="false"/>
+    </node>
+
+    <node pkg="tf" type="static_transform_publisher" name="link2_broadcaster" args="0.0 0 0.59 0 0 0 base_link velodyne 50" />
+    <node pkg="tf" type="static_transform_publisher" name="link3_broadcaster" args="0.0 0 0.54 0 0 0 base_link imu 50" />
+    <node pkg="tf" type="static_transform_publisher" name="link4_broadcaster" args="0.0 0 0.0 0 0 0 map odom 50" />
+
+    <node name="MapServer" pkg="map_server" type="map_server" output="screen" args="$(find location)/map/yunshenchu.yaml"/>
+
+    <node pkg="detection" type="detection" name="detection1" output="screen">
+        <param name="cameraFrame" value="AreoCameraFront_depth_optical_frame"/>
+<!--        <param name="roll" value="-105"/>
+        <param name="pitch" value="0.0"/>
+        <param name="yaw" value="-90"/>-->
+        <param name="FilterFieldName" value="z"/>
+        <param name="setFilterLimitsUp" value="4.0"/>
+        <param name="setFilterLimitsDown" value="0.0"/>
+    </node>
+
+<!--    <node pkg="detection" type="tf_pose_odom2camera" name="tf_pose_odom2camera" output="screen">
+        <param name="cameraFrame" value="AreoCameraFront_depth_optical_frame"/>
+    </node>-->
+
+    <group if="$(arg rviz)">
+    <node launch-prefix="nice" pkg="rviz" type="rviz" name="rviz" args="-d $(find location)/rviz_cfg/ndt_matching.rviz" />
+    </group>
+
+
+</launch>
