@@ -1,8 +1,8 @@
 # elevation-mapping
 
 ## 介绍
-- 四足项目可行性区域检测,根据先验位姿,利用传感器数据稠密建图,为导航规划提供可行性区域的估计。
-- 具体采用了[四足机器人的ndt定位程序](https://gitee.com/csc105_slam_group/location)获取位姿信息，采用[Realsense D435i相机](https://gitee.com/sensors_and_external_devices_drive/realsense-ros)获取深度点云信息。采用detection节点对接定位信息传送给elevation_mapping节点（这里的elevation_mapping较github版本有修改），在elevation_mapping中根据每个栅格内点的方差大小确定可行与否。
+- 四足项目可行性区域检测，根据先验位姿，利用传感器数据稠密建图，为导航规划提供可行性区域的估计
+- 具体采用了[四足机器人的ndt定位程序](https://gitee.com/csc105_slam_group/location)获取位姿信息，采用[Realsense D435i相机](https://gitee.com/sensors_and_external_devices_drive/realsense-ros)获取深度点云信息。采用detection节点对接定位信息传送给elevation_mapping节点（这里的elevation_mapping较github版本有修改），在elevation_mapping中根据每个栅格内点的方差大小确定可行与否
 
 ## 安装
 
@@ -15,10 +15,10 @@ ros Kinetic
 ### 依赖包
 
 - [Grid Map](https://github.com/anybotics/grid_map) (grid map library for mobile robots)
-- [kindr](http://github.com/anybotics/kindr) (kinematics and dynamics library for robotics),
-- [kindr_ros](https://github.com/anybotics/kindr_ros) (ROS wrapper for kindr),
-- [Point Cloud Library (PCL)](http://pointclouds.org/) (point cloud processing),
-- [Eigen](http://eigen.tuxfamily.org) (linear algebra library).
+- [kindr](http://github.com/anybotics/kindr) (kinematics and dynamics library for robotics)
+- [kindr_ros](https://github.com/anybotics/kindr_ros) (ROS wrapper for kindr)
+- [Point Cloud Library (PCL)](http://pointclouds.org/) (point cloud processing)
+- [Eigen](http://eigen.tuxfamily.org) (linear algebra library)
 
 
 ### 编译
@@ -85,7 +85,7 @@ catkin_make
 
 ## 效果图
 
-<img alt="node data"src="image/result.png" width="700" >
+<img alt="node data" src="image/result.png" width="700">
 
 
 
