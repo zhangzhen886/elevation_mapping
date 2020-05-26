@@ -1,0 +1,111 @@
+开始：
+catkin_init_workspace 初始化
+catkin_make_isolated 编译kindr（单独编译，cmake也行）
+
+单独编译3个主程序包（location、detection、elevation_mapping）：
+catkin_make -DCATKIN_WHITELIST_PACKAGES="location"
+catkin_make -DCATKIN_WHITELIST_PACKAGES="detection"
+catkin_make -DCATKIN_WHITELIST_PACKAGES="elevation_mapping"
+
+安装ROS包：
+sudo apt-get install ros-kinetic-grid-map
+sudo apt-get install ros-kinetic-velodyne-msgs 
+sudo apt-get install ros-kinetic-octomap
+sudo apt-get install ros-kinetic-octomap-sever
+sudo apt-get install ros-kinetic-octomap-msgs
+sudo apt-get install ros-kinetic-octomap-rviz-plugins 
+
+安装Realsense相机SDK和librealsense：
+git clone https://github.com/IntelRealSense/librealsense.git
+mkdir build
+cd build
+cmake ..
+sudo make uninstall && make clean && make && sudo make install
+
+git clone https://github.com/IntelRealSense/realsense-ros.git
+catkin_make -DCATKIN_WHITELIST_PACKAGES="realsense2_camera"
+catkin_make install
+
+更新路径：
+source devel/setup.sh
+
+
+所有包的大小总和约157Mb
+
+——————————————————————————————————————————————————————————————————
+以下是问题记录：
+
+Could not find the required component 'grid_map_rviz_plugin'. The following CMake error indicates that you either need to install the package with the same name or change your environment so that it can be found.
+CMake Error at /opt/ros/kinetic/share/catkin/cmake/catkinConfig.cmake:83 (find_package):
+  Could not find a package configuration file provided by
+  "grid_map_rviz_plugin" with any of the following names:
+
+    grid_map_rviz_pluginConfig.cmake
+    grid_map_rviz_plugin-config.cmake
+
+  Add the installation prefix of "grid_map_rviz_plugin" to CMAKE_PREFIX_PATH
+  or set "grid_map_rviz_plugin_DIR" to a directory containing one of the
+  above files.  If "grid_map_rviz_plugin" provides a separate development
+  package or SDK, be sure it has been installed.
+Call Stack (most recent call first):
+  CMakeLists.txt:5 (find_package)
+
+需要 sudo apt-get install ros-kinetic-grid-map
+
+——————————————————————————————————————————————————————————————————
+
+CMake Error at /opt/ros/kinetic/share/catkin/cmake/catkinConfig.cmake:83 (find_package):
+  Could not find a package configuration file provided by "velodyne_msgs"
+  with any of the following names:
+
+    velodyne_msgsConfig.cmake
+    velodyne_msgs-config.cmake
+
+  Add the installation prefix of "velodyne_msgs" to CMAKE_PREFIX_PATH or set
+  "velodyne_msgs_DIR" to a directory containing one of the above files.  If
+  "velodyne_msgs" provides a separate development package or SDK, be sure it
+  has been installed.
+Call Stack (most recent call first):
+  CMakeLists.txt:31 (find_package)
+
+需要 sudo apt-get install ros-kinetic-velodyne-msgs 
+
+——————————————————————————————————————————————————————————————————
+
+CMake Error at /opt/ros/kinetic/share/catkin/cmake/catkinConfig.cmake:83 (find_package):
+  Could not find a package configuration file provided by "lidar_correction"
+  with any of the following names:
+
+    lidar_correctionConfig.cmake
+    lidar_correction-config.cmake
+
+  Add the installation prefix of "lidar_correction" to CMAKE_PREFIX_PATH or
+  set "lidar_correction_DIR" to a directory containing one of the above
+  files.  If "lidar_correction" provides a separate development package or
+  SDK, be sure it has been installed.
+Call Stack (most recent call first):
+  CMakeLists.txt:27 (find_package)
+
+需要 相关文件夹
+
+——————————————————————————————————————————————————————————————————
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
