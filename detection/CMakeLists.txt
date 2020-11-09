@@ -8,9 +8,9 @@ set(CMAKE_CXX_FLAGS "-std=c++11 -msse -msse2 -msse3 -msse4 -msse4.1 -msse4.2")
 set(CMAKE_BUILD_TYPE "RELEASE")
 
 find_package(OpenCV 3.0 QUIET)
-find_package(octomap REQUIRED)
-include_directories(SYSTEM BEFORE ${OCTOMAP_INCLUDE_DIRS})
-link_directories(${OCTOMAP_LIBRARY_DIRS})
+#find_package(octomap REQUIRED)
+#include_directories(SYSTEM BEFORE ${OCTOMAP_INCLUDE_DIRS})
+#link_directories(${OCTOMAP_LIBRARY_DIRS})
 
 find_package(PCL 1.7 REQUIRED)
 include_directories(${PCL_INCLUDE_DIRS})
@@ -24,7 +24,7 @@ if (OPENMP_FOUND)
 endif()
 
 ## Add support for C++11, supported in ROS Kinetic and newer
-SET(CMAKE_CXX_FLAGS "-std=c++11 -O3 -g -Wall ${CMAKE_CXX_FLAGS}")
+#SET(CMAKE_CXX_FLAGS "-std=c++11 -O3 -g -Wall ${CMAKE_CXX_FLAGS}")
 
 find_package(Eigen3 REQUIRED)
 #find_package(tf REQUIRED)
@@ -35,16 +35,16 @@ find_package(catkin REQUIRED COMPONENTS
     roscpp
     sensor_msgs
     std_msgs
-    velodyne_msgs
-    lidar_correction
-    receive_xsens
-    ndt_omp
-    octomap_ros
-    octomap_msgs cv_bridge
+    # velodyne_msgs
+    # octomap_ros
+    # octomap_msgs cv_bridge
     message_filters
     tf
     tf_conversions
     eigen_conversions
+    grid_map_core
+    grid_map_ros
+    grid_map_msgs
 )
 
 
@@ -54,17 +54,32 @@ find_package(catkin REQUIRED COMPONENTS
 
 include_directories(
   ${catkin_INCLUDE_DIRS}
-  ${PROJECT_SOURCE_DIR}/include
+#  ${PROJECT_SOURCE_DIR}/include
   ${EIGEN3_INCLUDE_DIR}
   ${PCL_INCLUDE_DIRS}
-  ${OCTOMAP_INCLUDE_DIRS}
+#  ${OCTOMAP_INCLUDE_DIRS}
 )
 catkin_package(
 #  LIBRARIES octomap location
-  LIBRARIES octomap
-  INCLUDE_DIRS include
-  CATKIN_DEPENDS eigen_conversions tf_conversions tf geometry_msgs  nav_msgs pcl_conversions pcl_ros roscpp rospy sensor_msgs std_msgs velodyne_msgs
-  ndt_omp
+#  LIBRARIES octomap
+#  INCLUDE_DIRS include
+  CATKIN_DEPENDS
+    grid_map_core
+    grid_map_ros
+    grid_map_msgs
+    eigen_conversions
+    tf_conversions
+    tf
+    geometry_msgs
+    nav_msgs
+    pcl_conversions
+    pcl_ros
+    roscpp
+    rospy
+    sensor_msgs
+    std_msgs
+#  velodyne_msgs
+#  ndt_omp
 )
 set(LIBS
         ${OpenCV_LIBS}
@@ -73,14 +88,22 @@ set(LIBS
         )
 
 add_executable(detection ${PROJECT_SOURCE_DIR}/src/detection.cpp)
-target_link_libraries(detection ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${LIBS})
+target_link_libraries(detection ${catkin_LIBRARIES} ${LIBS})
 include_directories(include ${catkin_INCLUDE_DIRS} )
 
-add_executable(listenpose ${PROJECT_SOURCE_DIR}/src/listenpose.cpp)
-target_link_libraries(listenpose ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${LIBS})
+add_executable(grid_map_test ${PROJECT_SOURCE_DIR}/src/grid_map_test.cpp)
+target_link_libraries(grid_map_test ${catkin_LIBRARIES} ${LIBS})
 include_directories(include ${catkin_INCLUDE_DIRS} )
 
-add_executable(tf_pose_odom2camera ${PROJECT_SOURCE_DIR}/src/tf_pose_odom2camera.cpp)
-target_link_libraries(tf_pose_odom2camera ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${LIBS})
+add_executable(rawmapping ${PROJECT_SOURCE_DIR}/src/rawmapping.cpp)
+target_link_libraries(rawmapping ${catkin_LIBRARIES} ${LIBS})
 include_directories(include ${catkin_INCLUDE_DIRS} )
+
+#add_executable(listenpose ${PROJECT_SOURCE_DIR}/src/listenpose.cpp)
+#target_link_libraries(listenpose ${catkin_LIBRARIES} ${LIBS})
+#include_directories(include ${catkin_INCLUDE_DIRS} )
+
+#add_executable(tf_pose_odom2camera ${PROJECT_SOURCE_DIR}/src/tf_pose_odom2camera.cpp)
+#target_link_libraries(tf_pose_odom2camera ${catkin_LIBRARIES} ${LIBS})
+#include_directories(include ${catkin_INCLUDE_DIRS} )
 

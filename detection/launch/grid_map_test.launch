@@ -1,0 +1,15 @@
+<launch>
+  <!-- Launch the grid map simple demo node -->
+  <node pkg="detection" type="grid_map_test" name="grid_map_test" output="screen" />
+
+  <!-- Launch the grid map visualizer -->
+<!--   <include file="$(find elevation_mapping_demos)/launch/visualization.launch" /> -->
+<!--   <node pkg="grid_map_visualization" type="grid_map_visualization" name="grid_map_visualization" output="screen"> -->
+<!--     <rosparam command="load" file="$(find grid_map_demos)/config/simple_demo.yaml" /> -->
+<!--   </node> -->
+
+  <!-- Launch RViz with the demo configuration -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find detection)/rviz/grid_map_demo.rviz" />
+<!--   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find grid_map_demos)/rviz/grid_map_demo.rviz" />-->
+<!--   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find elevation_mapping_demos)/rviz/elevation_map_visualization.rviz" /> -->
+</launch>

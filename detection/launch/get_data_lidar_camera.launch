@@ -1,0 +1,8 @@
+<launch>
+    <!-- Launch realsense camera node -->
+    <include file="$(find realsense2_camera)/launch/rs_camera_cpu.launch" />
+
+    <!-- Launch velodyne node -->
+    <include file="$(find velodyne_pointcloud)/launch/VLP16_points.launch" />
+
+</launch>

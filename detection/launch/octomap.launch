@@ -1,0 +1,76 @@
+<launch>
+
+<node pkg="location" type="locationV2" name="locationV2"  output="screen">
+    <param name="mapPCDFileName" value="$(find location)/map/20200527/fast/ysc2.pcd"/>
+    <param name="lidarName" value="velodyne_points"/>
+    <param name="enableSwitchLidarData" value="false"/>
+    <param name="switchBufferSize" value="4"/>
+    <param name="enablePublishGlobalDenseMap" value="false"/>
+</node>
+
+<node pkg="tf" type="static_transform_publisher" name="link2_broadcaster" args="0.0 0 0.59 0 0 0 base_link velodyne 50" />
+<node pkg="tf" type="static_transform_publisher" name="link3_broadcaster" args="0.0 0 0.54 0 0 0 base_link imu 50" />
+<node pkg="tf" type="static_transform_publisher" name="link4_broadcaster" args="0.0 0 0.0 0 0 0 map odom 50" />
+<node pkg="tf" type="static_transform_publisher" name="link5_broadcaster" args="0.0 0.0 -0.13 -1.57 -0.025 -1.9 velodyne camera_link 50" />
+
+<node name="MapServer" pkg="map_server" type="map_server" output="screen" args="$(find location)/map/20200527/fast/ysc2.yaml"/>
+
+<node pkg="detection" type="detection" name="detection" output="screen">
+    <param name="cameraFrame" value="camera_link"/>
+    <param name="cameraPoint" value="/camera/depth/color/points"/>
+    <param name="odomFrame" value="odom"/>
+    <param name="FilterFieldName" value="z"/>
+    <param name="setFilterLimitsUp" value="5.0"/>
+    <param name="setFilterLimitsDown" value="0.0"/>
+    <param name="use_static_tf" value="false"/>
+</node>
+
+<node pkg="detection" type="rawmapping" name="rawmapping" output="screen">
+    <param name="cameraFrame" value="camera_link"/>
+    <param name="mpaFrame" value="odom"/>
+    <param name="cameraPoint" value="/camera/depth/color/points"/>
+    <param name="FilterFieldName" value="z"/>
+    <param name="setFilterLimitsUp" value="3.5"/>
+    <param name="setFilterLimitsDown" value="0.3"/>
+    <param name="setFilterheight" value="0.1"/>
+    <param name="setOutlierFilter" value="false"/>
+    <param name="setOutlierFilterMeanK" value="10"/>
+    <param name="setOutlierFilterThresh" value="1.0"/>
+    <param name="voxelsize" value="0.04"/>
+    <param name="roshz" value="1000"/>
+    <param name="wait_surfel_finished" value="10000"/>
+    <param name="setPointNumLimit" value="500000"/>
+</node>
+
+<node pkg="octomap_server" type="octomap_server_node" name="octomap_server">
+
+    <!-- resolution in meters per pixel -->
+    <param name="resolution" value="0.05" />
+
+    <!-- name of the fixed frame, needs to be "/map" for SLAM -->
+    <param name="frame_id" type="string" value="/odom" />
+
+    <!-- max range / depth resolution of the kinect in meter -->
+    <param name="sensor_model/max_range" value="3.0" />
+    <param name="latch" value="false" />
+
+    <!-- max/min height for occupancy map, should be in meters -->
+    <param name="pointcloud_max_z" value="10" />
+    <param name="pointcloud_min_z" value="-1" />
+
+    <!-- topic from where pointcloud2 messages are subscribed -->
+    <remap from="/cloud_in" to="/camera_point" />
+
+<param name="filter_ground" value="false" />
+<param name="ground_filter/distance" value="0.5" />
+
+</node>
+
+    <arg name="rviz" default="true" />
+    <param name="use_sim_time" value="true" />
+    <group if="$(arg rviz)">
+    <node launch-prefix="nice" pkg="rviz" type="rviz" name="rviz" args="-d $(find location)/rviz_cfg/ndt_matching.rviz" />
+    </group>
+
+
+</launch>

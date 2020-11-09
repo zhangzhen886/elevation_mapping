@@ -54,37 +54,42 @@
   <build_depend>tf</build_depend>
   <build_depend>tf_conversions</build_depend>
   <build_depend>eigen_conversions</build_depend>
-  <build_depend>turtlesim</build_depend>
+<!--  <build_depend>turtlesim</build_depend>-->
   <build_depend>nav_msgs</build_depend>
   <build_depend>pcl_conversions</build_depend>
   <build_depend>pcl_ros</build_depend>
   <build_depend>rospy</build_depend>
   <build_depend>sensor_msgs</build_depend>
   <build_depend>std_msgs</build_depend>
-  <build_depend>velodyne_msgs</build_depend>
-  <build_depend>ndt_omp</build_depend>
+<!--  <build_depend>velodyne_msgs</build_depend>-->
+<!--  <build_depend>ndt_omp</build_depend>-->
+
+  <depend>grid_map_core</depend>
+  <depend>grid_map_ros</depend>
+  <depend>grid_map_msgs</depend>
+  <depend>eigen</depend>
 
   <build_export_depend>geometry_msgs</build_export_depend>
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>tf</build_export_depend>
   <build_export_depend>tf_conversions</build_export_depend>
   <build_export_depend>eigen_conversions</build_export_depend>
-  <build_export_depend>turtlesim</build_export_depend>
+<!--  <build_export_depend>turtlesim</build_export_depend>-->
 
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>roscpp</exec_depend>
   <exec_depend>tf</exec_depend>
   <exec_depend>tf_conversions</exec_depend>
   <exec_depend>eigen_conversions</exec_depend>
-  <exec_depend>turtlesim</exec_depend>
+<!--  <exec_depend>turtlesim</exec_depend>-->
   <exec_depend>nav_msgs</exec_depend>
   <exec_depend>pcl_conversions</exec_depend>
   <exec_depend>pcl_ros</exec_depend>
   <exec_depend>rospy</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>std_msgs</exec_depend>
-  <exec_depend>velodyne_msgs</exec_depend>
-  <exec_depend>ndt_omp</exec_depend>
+<!--  <exec_depend>velodyne_msgs</exec_depend>-->
+<!--  <exec_depend>ndt_omp</exec_depend>-->
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>
