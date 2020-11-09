@@ -4,6 +4,8 @@
 - 四足项目可行性区域检测，根据先验位姿，利用传感器数据稠密建图，为导航规划提供可行性区域的估计
 - 具体采用了[四足机器人的ndt定位程序](https://gitee.com/csc105_slam_group/location)获取位姿信息，采用[Realsense D435i相机](https://gitee.com/sensors_and_external_devices_drive/realsense-ros)获取深度点云信息。采用detection节点对接定位信息传送给elevation_mapping节点（这里的elevation_mapping较github版本有修改），在elevation_mapping中根据每个栅格内点的方差大小确定可行与否
 
+
+
 ## 安装
 
 ### 开发环境
@@ -29,9 +31,12 @@ catkin_make
 ## 节点参数含义说明
 `./detection/launch/all.launch`包含了设置好的location、detection、elevation_mapping节点，具体节点参数的含义说明如下：
 
-### 节点 detection
+### 1. 节点 detection
+
+接收机器人位姿和每一帧点云数据，进行简单滤波处理，转化成相应坐标系下的数据
 
 #### 订阅的话题名称
+
 * **`/odom`** (nav_msgs::Odometry) 机器人的Odometry，这里是基于`/base_link`的frame
 * **`/AreoCameraFront/depth/color/points`** (sensor_msgs::PointCloud2) 相机节点发布的深度点云（无颜色信息）
 
@@ -42,11 +47,44 @@ catkin_make
 
 #### 参数
 * **`cameraFrame`** (string) 传感器（相机）frame的id
-* **`FilterFieldName`** (string) 对相机点云进行直通滤波的通道名称
+* **`cameraPoint`** (string) 订阅深度点云数据的话题名称
+* **`odomFrame`** (string) 订阅机器人Odometry的话题名称
+* **`cameraFrame`** (string) 传感器（相机）frame的id
+* **`FilterFieldName`** (string) 对相机点云进行直通滤波的通道名称，可选x y z
 * **`setFilterLimitsUp`** (double) 直通滤波上界（单位：m）
 * **`setFilterLimitsDown`** (double) 直通滤波下界（单位：m）
 
-### 节点 elevation_mapping
+### 2. 节点rawmapping
+
+接收处理后的每一帧点云数据，融合成局部点云地图，并作直通滤波、高度滤波、体素滤波、离群点去除、限制发布地图点的数量
+
+#### 订阅的话题名称
+* **`/camera_point`** (sensor_msgs::PointCloud2) 直通滤波后的相机点云数据
+* **`/odom_pose_cameraframe`** (nav_msgs::Odometry) 发布相机pose节点，基于`cameraFrame`
+
+#### 发布的话题名称
+* **`/rawmap`** (sensor_msgs::PointCloud2) 发布原始地图（滤波前，仅作融合）
+* **`/fusemap`** (sensor_msgs::PointCloud2) 发布滤波处理后的带颜色地图
+
+#### 参数
+* **`cameraFrame`** (string) 传感器（相机）frame的id
+* **`mapFrame`** (string) 地图发布时的frame
+* **`cameraPoint`** (string) 订阅深度点云数据的话题名称
+* **`FilterFieldName`** (string) 对相机点云进行直通滤波的通道名称，可选x y z
+* **`setFilterLimitsUp`** (double) 直通滤波上界（单位：m）
+* **`setFilterLimitsDown`** (double) 直通滤波下界（单位：m）
+* **`setFilterheight`** (double) 高度阈值
+* **`setFilterLimitsUp`** (bool) 是否进行离群点去除
+* **`setOutlierFilterMeanK`** (int) k近邻点数
+* **`setOutlierFilterThresh`** (double) 离群点阈值
+* **`voxelsize`** (float) 体素滤波方格大小（单位：m）
+* **`setPointNumLimit`** (double) 限制地图中点的数量
+
+### 3. 节点 elevation_mapping
+
+获取每一帧点云数据，结合机器人实时位姿，发布栅格地图
+
+<img alt="node data" src="image/elevation_mapping.png" width="1000">
 
 #### 发布的话题名称
 * **`/elevation_mapping/elevation_map`** (grid_map_msgs/GridMap) 以GridMap显示栅格地图（在rviz中调整
@@ -83,17 +121,43 @@ catkin_make
 * **`sensor_processor/cutoff_min_depth`** (double) 传感器输入最小深度值（单位：m）
 * **`sensor_processor/normal_factor_a` `sensor_processor/normal_factor_b` `sensor_processor/normal_factor_c` `sensor_processor/normal_factor_d` `sensor_processor/normal_factor_e` `sensor_processor/lateral_factor`** (double) 结构光传感器内参
 
+### 4. 节点 grid_map_test
+
+获取点云地图（融合后），发布grid_map
+
+#### 订阅的话题名称
+* **`point_sub_topic`** (sensor_msgs::PointCloud2) 订阅点云地图（融合后）
+
+#### 发布的话题名称
+* **`grid_pub_topic`** (grid_map_msgs::GridMap) 发布栅格地图
+
+#### 参数
+* **`point_sub_topic`** (string) 订阅点云地图的话题名称
+* **`grid_pub_topic`** (string) 发布栅格地图的话题名称
+* **`grid_frame_id`** (string) 发布栅格地图所属的frame（一般与点云地图的frame保持一直）
+* **`grid_map_size_x`** (float) 栅格地图尺寸x（单位：m）
+* **`grid_map_size_y`** (float) 栅格地图尺寸y（单位：m）
+* **`grid_map_resolution`** (float)  栅格地图分辨率（边长，单位：m）
+
+### 5. 节点 filters_demo（属于grid_map库下的grid_map_demos包）
+
+根据栅格地图，进行滤波，输出通行性地图
+
+<img alt="node data" src="image/traversity_map.png" width="1000">
+
+#### 订阅的话题名称
+* **`input_topic`** (grid_map_msgs::GridMap) 订阅栅格地图（默认图层为elevation）
+
+#### 发布的话题名称
+* **`output_topic`** (grid_map_msgs::GridMap) 发布通行性栅格地图
+
+#### 参数
+
+修改`./detection/config/filters_demo_filter_chain.yaml`
+
 ## 效果图
 
-<img alt="node data" src="image/result.png" width="700">
-
-
-
-
-
-
-
-
+<img alt="node data" src="image/result.png" width="500">
 
 
 
