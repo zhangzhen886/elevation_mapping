@@ -215,6 +215,16 @@ Visualization Manager:
       Use Fixed Frame: true
       Use rainbow: true
       Value: false
+    - Alpha: 0.699999988
+      Class: rviz/Map
+      Color Scheme: map
+      Draw Behind: false
+      Enabled: true
+      Name: Map
+      Topic: /grid_map_visualization/traversability_grid
+      Unreliable: false
+      Use Timestamp: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 255; 255; 255
@@ -240,25 +250,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 22.0242329
+      Distance: 18.5560493
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.740945637
-        Y: 2.49684167
-        Z: 0.478413045
+        X: -0.0770515427
+        Y: 2.17725611
+        Z: -0.130359128
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.0500000007
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 0.919796884
+      Pitch: 0.819797277
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 6.27359247
+      Yaw: 0.0354081728
     Saved: ~
 Window Geometry:
   Displays:

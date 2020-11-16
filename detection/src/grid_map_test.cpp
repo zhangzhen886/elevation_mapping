@@ -18,7 +18,10 @@ std::string grid_pub_topic;
 std::string grid_frame_id;
 float grid_map_size_x;
 float grid_map_size_y;
+float grid_map_position_x;
+float grid_map_position_y;
 float grid_map_resolution;
+bool realtime_update;
 
 //void Point2grid_with_elevation(const sensor_msgs::PointCloud2ConstPtr& receivePoint)
 //{
@@ -129,17 +132,16 @@ void Point2grid(const sensor_msgs::PointCloud2ConstPtr& receivePoint)
         auto& point = pointCloud->points[i];
         grid_map::Index index;
         grid_map::Position position(point.x, point.y);
+        auto& elevation = map.at("elevation", index);
 
         if (!map.getIndex(position, index)) continue; // Skip this point if it does not lie within the elevation map.
 
-        auto& elevation = map.at("elevation", index);
+        if (!map.isValid(index) || realtime_update) {
+            // No prior information in elevation map or should update map in real time, use measurement.
+            elevation = point.z;
+            continue;
+        }
 
-//        if (!map.isValid(index)) {
-//            // No prior information in elevation map, use measurement.
-//            elevation = point.z;
-//            continue;
-//        }
-        elevation = point.z;
     }
 
     // Publish grid map.
@@ -147,7 +149,7 @@ void Point2grid(const sensor_msgs::PointCloud2ConstPtr& receivePoint)
     grid_map_msgs::GridMap message;
     grid_map::GridMapRosConverter::toMessage(map, message);
     grid_pub.publish(message);
-    ROS_INFO_THROTTLE(1.0, "Grid map (timestamp %f) published.", message.info.header.stamp.toSec());
+    ROS_INFO_THROTTLE(10.0, "Grid map (timestamp %f) publisheds.", message.info.header.stamp.toSec());
 
 }
 
@@ -158,7 +160,10 @@ void ReadParameter(ros::NodeHandle& nh_param)
     nh_param.param<std::string>("grid_frame_id", grid_frame_id, "/lidar_odom");
     nh_param.param<float>("grid_map_size_x", grid_map_size_x, 20.0);
     nh_param.param<float>("grid_map_size_y", grid_map_size_y, 20.0);
+    nh_param.param<float>("grid_map_position_x", grid_map_position_x, 0.0);
+    nh_param.param<float>("grid_map_position_y", grid_map_position_y, 0.0);
     nh_param.param<float>("grid_map_resolution", grid_map_resolution, 0.2);
+    nh_param.param<bool>("realtime_update", realtime_update, true);
 }
 
 int main(int argc, char** argv)
@@ -175,10 +180,14 @@ int main(int argc, char** argv)
 
     // Initial grid map.
     map.setFrameId(grid_frame_id);
-    map.setGeometry(grid_map::Length(grid_map_size_x, grid_map_size_y), grid_map_resolution);
-    ROS_INFO("Created map with size %f x %f m (%i x %i cells).",
+    grid_map::Position position_set(10.0, 10.0);
+//    map.setPosition(position_set);
+    map.setGeometry(grid_map::Length(grid_map_size_x, grid_map_size_y), grid_map_resolution,
+            grid_map::Position(grid_map_position_x,grid_map_position_y));
+    ROS_INFO("Created map with size %f x %f m (%i x %i cells). The center of the map is located at (%f, %f) in the %s frame.",
              map.getLength().x(), map.getLength().y(),
-             map.getSize()(0), map.getSize()(1));
+             map.getSize()(0), map.getSize()(1),
+             map.getPosition().x(), map.getPosition().y(), map.getFrameId().c_str());
 
     // Work with grid map in a loop.
     ros::Rate rate(1000.0);

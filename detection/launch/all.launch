@@ -36,7 +36,7 @@
 
 <node pkg="detection" type="rawmapping" name="rawmapping" output="screen">
     <param name="cameraFrame" value="camera_link"/>
-    <param name="mpaFrame" value="odom"/>
+    <param name="mapFrame" value="odom"/>
     <param name="cameraPoint" value="/camera/depth/color/points"/>
     <param name="FilterFieldName" value="z"/>
     <param name="setFilterLimitsUp" value="2.0"/>

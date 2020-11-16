@@ -176,6 +176,8 @@ int main(int argc, char** argv){
   nh_param.param<string>("cameraFrame", cameraFrame, "/AreoCameraFront_depth_optical_frame");
   nh_param.param<string>("cameraPoint", camera_point_topic, "/AreoCameraFront/depth/color/points");
   nh_param.param<string>("odomFrame", odomFrame, "/odom");
+  nh_param.param<string>("baseFrame", baseFrame, "/base_link");
+  nh_param.param<string>("lidarFrame", lidarFrame, "/velodyne");
 //  nh_param.param<double>("roll", RPY[0], 0.0);//角度制
 //  nh_param.param<double>("pitch", RPY[1], 0.0);//角度制
 //  nh_param.param<double>("yaw", RPY[2], 0.0);//角度制

@@ -1,10 +1,46 @@
 <launch>
+<!--    <node pkg="detection" type="detection" name="detection" output="screen">-->
+<!--        <param name="cameraFrame" value="camera_depth_optical_frame"/>-->
+<!--        <param name="cameraPoint" value="/camera/depth/points"/>-->
+<!--        <param name="odomFrame" value="/odom/ground_truth"/>-->
+<!--        <param name="baseFrame" value="/base"/>-->
+<!--        <param name="lidarFrame" value="/map"/>-->
+<!--        <param name="FilterFieldName" value="z"/>-->
+<!--        <param name="setFilterLimitsUp" value="5.0"/>-->
+<!--        <param name="setFilterLimitsDown" value="0.0"/>-->
+<!--        <param name="use_static_tf" value="false"/>-->
+<!--        <param name="elevation_wait_time" value="10"/>-->
+<!--    </node>-->
+
+<!--    <node pkg="detection" type="rawmapping" name="rawmapping" output="screen">-->
+<!--        <param name="cameraFrame" value="camera_depth_optical_frame"/>-->
+<!--        <param name="mapFrame" value="map"/>-->
+<!--        <param name="cameraPoint" value="/camera_point"/>-->
+<!--        <param name="FilterFieldName" value="z"/>-->
+<!--        <param name="setFilterLimitsUp" value="2.0"/>-->
+<!--        <param name="setFilterLimitsDown" value="0.5"/>-->
+<!--        <param name="setFilterheight" value="0.12"/>-->
+<!--        <param name="setOutlierFilter" value="false"/>-->
+<!--        <param name="setOutlierFilterMeanK" value="10"/>-->
+<!--        <param name="setOutlierFilterThresh" value="1.0"/>-->
+<!--        <param name="voxelsize" value="0.04"/>-->
+<!--        <param name="roshz" value="1000"/>-->
+<!--        <param name="wait_surfel_finished" value="10000"/>-->
+<!--        <param name="setPointNumLimit" value="250000"/>-->
+<!--    </node>-->
+
     <!-- Get Pointcloud and transform to Gridmap-->
     <node pkg="detection" type="grid_map_test" name="grid_map_test" output="screen" >
-        <param name="point_sub_topic" value="/map_points" />
+<!--        <param name="point_sub_topic" value="/fusemap" />-->
         <param name="grid_pub_topic" value="/grid_map" />
-        <param name="grid_map_size_x" value="20.0" />
-        <param name="grid_map_size_y" value="20.0" />
+<!--        <param name="grid_frame_id" value="/map" />-->
+        <param name="point_sub_topic" value="/velodyne_points" />
+        <param name="grid_frame_id" value="/velodyne" />
+        <param name="realtime_update" value="true" />
+        <param name="grid_map_size_x" value="8.0" />
+        <param name="grid_map_size_y" value="8.0" />
+        <param name="grid_map_position_x" value="4.0" />
+        <param name="grid_map_position_y" value="0.0" />
         <param name="grid_map_resolution" value="0.1" />
     </node>
 
@@ -25,5 +61,5 @@
     <node pkg="grid_map_visualization" type="grid_map_visualization" name="grid_map_visualization" output="screen" />
 
     <!-- Launch RViz with the demo configuration. -->
-    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find detection)/rviz/grid_map_demo.rviz" />
+<!--    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find detection)/rviz/grid_map_demo.rviz" />-->
 </launch>

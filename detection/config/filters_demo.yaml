@@ -1,9 +1,9 @@
-image_to_gridmap_demo:
-  image_topic: "/image_publisher/image"
-  resolution: 0.02
-  map_frame_id: "map"
-  min_height: -0.5
-  max_height: 1.0
+#image_to_gridmap_demo:
+#  image_topic: "/image_publisher/image"
+#  resolution: 0.02
+#  map_frame_id: "map"
+#  min_height: -0.5
+#  max_height: 1.0
 
 grid_map_visualization:
   grid_map_topic: /grid_map_filter_demo/filtered_map
@@ -20,5 +20,6 @@ grid_map_visualization:
       type: occupancy_grid
       params:
         layer: traversability
-        data_min: 0.0
-        data_max: 1.0
+#        layer: elevation_inpainted
+        data_min: 0.05
+        data_max: 0.08

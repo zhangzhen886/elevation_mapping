@@ -73,16 +73,16 @@ grid_map_filters:
       output_layer: roughness
       expression: abs(elevation_inpainted - elevation_smooth)
 
-  # Edge detection by computing the standard deviation from slope.
-  - name: edge_detection
-    type: gridMapFilters/SlidingWindowMathExpressionFilter
-    params:
-      input_layer: slope
-      output_layer: edges
-      expression: sqrt(sumOfFinites(square(slope - meanOfFinites(slope))) ./ numberOfFinites(slope)) # Standard deviation
-      compute_empty_cells: false
-      edge_handling: crop # options: inside, crop, empty, mean
-      window_length: 0.05
+#  # Edge detection by computing the standard deviation from slope.
+#  - name: edge_detection
+#    type: gridMapFilters/SlidingWindowMathExpressionFilter
+#    params:
+#      input_layer: slope
+#      output_layer: edges
+#      expression: sqrt(sumOfFinites(square(slope - meanOfFinites(slope))) ./ numberOfFinites(slope)) # Standard deviation
+#      compute_empty_cells: false
+#      edge_handling: crop # options: inside, crop, empty, mean
+#      window_length: 0.05
 
   # # Edge detection on elevation layer with convolution filter as alternative to filter above.
   # - name: edge_detection

@@ -163,8 +163,7 @@ void fuze_Depth_Pose(const sensor_msgs::PointCloud2ConstPtr& depth, const nav_ms
   fusemap_pub.publish(fusemap_sensor);//发布融合地图
 
   //显示大小和时间
-  cout << "fused cloudmap size: " << fusemap_ptr_filtered->size()
-       << ", fuse map cost time: " << (ros::Time::now() - fuse_start_time).toSec() << " s" << endl;
+  ROS_INFO_THROTTLE(10.0, "fused cloudmap size: %lu, fuse map cost time: %f s", fusemap_ptr_filtered->size(), (ros::Time::now() - fuse_start_time).toSec());
   }
 
 void surfel_mapping()
@@ -220,7 +219,7 @@ int main(int argc, char** argv){
   //定义节点参数信息
   nh_param.param<string>("cameraFrame", cameraFrame, "/AreoCameraFront_depth_optical_frame");
   nh_param.param<string>("cameraPoint", camera_point_topic, "/AreoCameraFront/depth/color/points");
-  nh_param.param<string>("mpaFrame", mapFrame, "/odom");//地图发布时的frame
+  nh_param.param<string>("mapFrame", mapFrame, "/odom");//地图发布时的frame
   nh_param.param<string>("FilterFieldName", FilterFieldName, "z");//过滤字段
   nh_param.param<double>("setFilterLimitsUp", setFilterLimitsUp, 10.0);//长度范围上界
   nh_param.param<double>("setFilterLimitsDown", setFilterLimitsDown, 0.0);//长度范围下界
