@@ -49,10 +49,13 @@ catkin_make
 * **`cameraFrame`** (string) 传感器（相机）frame的id
 * **`cameraPoint`** (string) 订阅深度点云数据的话题名称
 * **`odomFrame`** (string) 订阅机器人Odometry的话题名称
+* **`baseFrame`** (string) 订阅机器人本体frame的id
+* **`lidarFrame`** (string) 传感器（雷达）frame的id，涉及坐标转换，与Odometry的frame id保持一致
 * **`cameraFrame`** (string) 传感器（相机）frame的id
 * **`FilterFieldName`** (string) 对相机点云进行直通滤波的通道名称，可选x y z
 * **`setFilterLimitsUp`** (double) 直通滤波上界（单位：m）
 * **`setFilterLimitsDown`** (double) 直通滤波下界（单位：m）
+* **`use_static_tf`** (bool) 为true时，采用固定的相机和lidarFrame的坐标转换关系（程序内置矩阵，可通过预先标定得到）
 
 ### 2. 节点rawmapping
 
@@ -137,6 +140,9 @@ catkin_make
 * **`grid_frame_id`** (string) 发布栅格地图所属的frame（一般与点云地图的frame保持一直）
 * **`grid_map_size_x`** (float) 栅格地图尺寸x（单位：m）
 * **`grid_map_size_y`** (float) 栅格地图尺寸y（单位：m）
+* **`grid_map_position_x`** (float) 栅格地图起始中心点位置x（单位：m）
+* **`grid_map_position_y`** (float) 栅格地图起始中心点位置y（单位：m）
+（可以使用命令`roslaunch grid_map_demos move_demo.launch`查看地图随中心点移动的效果）
 * **`grid_map_resolution`** (float)  栅格地图分辨率（边长，单位：m）
 
 ### 5. 节点 filters_demo（属于grid_map库下的grid_map_demos包）
