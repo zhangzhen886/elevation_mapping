@@ -18,8 +18,8 @@
     <param name="mapFrame" value="map"/>
     <param name="cameraPoint" value="/camera_point"/>
     <param name="FilterFieldName" value="z"/>
-    <param name="setFilterLimitsUp" value="2.0"/>
-    <param name="setFilterLimitsDown" value="0.5"/>
+    <param name="setFilterLimitsUp" value="3.5"/>
+    <param name="setFilterLimitsDown" value="0.0"/>
     <param name="setFilterheight" value="0.12"/>
     <param name="setOutlierFilter" value="false"/>
     <param name="setOutlierFilterMeanK" value="10"/>

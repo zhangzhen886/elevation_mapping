@@ -60,7 +60,7 @@ void fuze_Depth_Pose(const sensor_msgs::PointCloud2ConstPtr& depth, const nav_ms
   nav_msgs::Odometry syn_camerapose = *pose;
   ros::Time fuse_start_time = ros::Time::now();
   ros::Time point_sync = syn_depth.header.stamp;
-  cout << "point time now is : " << point_sync.toSec() << endl;
+//  cout << "point time now is : " << point_sync.toSec() << endl;
 
   //转换数据格式为pcl
   pcl::PointCloud<cam_PointT>::Ptr cur_cloud (new pcl::PointCloud<cam_PointT>);

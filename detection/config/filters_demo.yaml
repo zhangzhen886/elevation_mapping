@@ -21,5 +21,5 @@ grid_map_visualization:
       params:
         layer: traversability
 #        layer: elevation_inpainted
-        data_min: 0.05
-        data_max: 0.08
+        data_min: 0.0
+        data_max: 1.0

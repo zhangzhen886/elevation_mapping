@@ -1,5 +1,6 @@
 #include <ros/ros.h>
 #include <string>
+#include <nav_msgs/Odometry.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <grid_map_ros/grid_map_ros.hpp>
 #include <grid_map_msgs/GridMap.h>
@@ -12,16 +13,19 @@
 grid_map::GridMap map({"elevation"});
 ros::Publisher grid_pub;
 ros::Subscriber point_sub;
+ros::Subscriber position_sub;
 
 std::string point_sub_topic;
+std::string position_sub_topic;
 std::string grid_pub_topic;
 std::string grid_frame_id;
-float grid_map_size_x;
-float grid_map_size_y;
-float grid_map_position_x;
-float grid_map_position_y;
-float grid_map_resolution;
-bool realtime_update;
+double grid_map_size_x;
+double grid_map_size_y;
+double grid_map_position_x;
+double grid_map_position_y;
+double grid_map_resolution;
+bool point_update;
+bool position_update;
 
 //void Point2grid_with_elevation(const sensor_msgs::PointCloud2ConstPtr& receivePoint)
 //{
@@ -126,22 +130,21 @@ void Point2grid(const sensor_msgs::PointCloud2ConstPtr& receivePoint)
     pcl::PointCloud<pcl::PointXYZ>::Ptr pointCloud (new pcl::PointCloud<pcl::PointXYZ>);
     pcl::fromROSMsg(*receivePoint, *pointCloud);
 
-
 //    for (grid_map::GridMapIterator it(map); !it.isPastEnd(); ++it)
     for (unsigned int i = 0; i < pointCloud->size(); ++i){
         auto& point = pointCloud->points[i];
         grid_map::Index index;
         grid_map::Position position(point.x, point.y);
-        auto& elevation = map.at("elevation", index);
 
         if (!map.getIndex(position, index)) continue; // Skip this point if it does not lie within the elevation map.
 
-        if (!map.isValid(index) || realtime_update) {
+        auto& elevation = map.at("elevation", index);
+
+        if (!map.isValid(index) || point_update) {
             // No prior information in elevation map or should update map in real time, use measurement.
-            elevation = point.z;
+            elevation= point.z;
             continue;
         }
-
     }
 
     // Publish grid map.
@@ -149,21 +152,31 @@ void Point2grid(const sensor_msgs::PointCloud2ConstPtr& receivePoint)
     grid_map_msgs::GridMap message;
     grid_map::GridMapRosConverter::toMessage(map, message);
     grid_pub.publish(message);
-    ROS_INFO_THROTTLE(10.0, "Grid map (timestamp %f) publisheds.", message.info.header.stamp.toSec());
+    ROS_INFO_THROTTLE(10.0, "Grid map (timestamp %f) published.", message.info.header.stamp.toSec());
+}
 
+void MapPositionUpdate(const nav_msgs::OdometryConstPtr& pose)
+{
+    // Move map with the center of robot's base position
+    // Pose's frame_id should be same with map's frame_id
+    grid_map::Position position_new(pose->pose.pose.position.x, pose->pose.pose.position.y);
+    map.move(position_new);
+    ROS_INFO_THROTTLE(10.0, "The center of the moved map is located at (%f, %f) in the %s frame.", map.getPosition().x(), map.getPosition().y(), map.getFrameId().c_str());
 }
 
 void ReadParameter(ros::NodeHandle& nh_param)
 {
     nh_param.param<std::string>("point_sub_topic", point_sub_topic, "/map_points");
+    nh_param.param<std::string>("position_sub_topic", position_sub_topic, "/odom/ground_truth");
     nh_param.param<std::string>("grid_pub_topic", grid_pub_topic, "/grid_map");
     nh_param.param<std::string>("grid_frame_id", grid_frame_id, "/lidar_odom");
-    nh_param.param<float>("grid_map_size_x", grid_map_size_x, 20.0);
-    nh_param.param<float>("grid_map_size_y", grid_map_size_y, 20.0);
-    nh_param.param<float>("grid_map_position_x", grid_map_position_x, 0.0);
-    nh_param.param<float>("grid_map_position_y", grid_map_position_y, 0.0);
-    nh_param.param<float>("grid_map_resolution", grid_map_resolution, 0.2);
-    nh_param.param<bool>("realtime_update", realtime_update, true);
+    nh_param.param<double>("grid_map_size_x", grid_map_size_x, 20.0);
+    nh_param.param<double>("grid_map_size_y", grid_map_size_y, 20.0);
+    nh_param.param<double>("grid_map_position_x", grid_map_position_x, 0.0);
+    nh_param.param<double>("grid_map_position_y", grid_map_position_y, 0.0);
+    nh_param.param<double>("grid_map_resolution", grid_map_resolution, 0.2);
+    nh_param.param<bool>("point_update", point_update, true);
+    nh_param.param<bool>("position_update", position_update, false);
 }
 
 int main(int argc, char** argv)
@@ -175,15 +188,18 @@ int main(int argc, char** argv)
     ReadParameter(nh_param);
 
     point_sub = nh.subscribe<sensor_msgs::PointCloud2>(point_sub_topic, 10, Point2grid);
-    grid_pub = nh.advertise<grid_map_msgs::GridMap>(grid_pub_topic, 1, true);
-
+    if(position_update){
+        // Move map with the center of robot's base position
+        position_sub = nh.subscribe<nav_msgs::Odometry>(position_sub_topic, 10, MapPositionUpdate);
+    }
+    grid_pub = nh.advertise<grid_map_msgs::GridMap>(grid_pub_topic, 10, true);
 
     // Initial grid map.
     map.setFrameId(grid_frame_id);
-    grid_map::Position position_set(10.0, 10.0);
-//    map.setPosition(position_set);
+//    map.setPosition(grid_map::Position(grid_map_position_x,grid_map_position_y));
     map.setGeometry(grid_map::Length(grid_map_size_x, grid_map_size_y), grid_map_resolution,
             grid_map::Position(grid_map_position_x,grid_map_position_y));
+//    map.setGeometry(grid_map::Length(grid_map_size_x, grid_map_size_y), grid_map_resolution);
     ROS_INFO("Created map with size %f x %f m (%i x %i cells). The center of the map is located at (%f, %f) in the %s frame.",
              map.getLength().x(), map.getLength().y(),
              map.getSize()(0), map.getSize()(1),
