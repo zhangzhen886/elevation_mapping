@@ -61,8 +61,8 @@
         <param name="occupancy_grid_pub_topic" value="/occupancy_grid_traversability" />
         <param name="elevation_layer" value="elevation" />
         <param name="traversability_layer" value="traversability" />
-        <param name="data_min" value="0.0" />
-        <param name="data_max" value="1.0" />
+        <param name="data_min" value="0.5" />
+        <param name="data_max" value="0.0" />
     </node>
 
     <!-- Load the general parameters (except for filter chain) for this demo. -->
