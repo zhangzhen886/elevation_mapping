@@ -185,7 +185,7 @@ catkin_make
 * **`data_max`** (float) 通行性最大值
   可以通过调整date_min和data_max调整转换后的地图显示效果，计算公式为
   $$
-  \frac{traversability - data_{min}}{data_{max} - data_{min}}
+  occupancy = \frac{traversability - data_{min}}{data_{max} - data_{min}}
   $$
   再转化为0-100的范围值.
 
