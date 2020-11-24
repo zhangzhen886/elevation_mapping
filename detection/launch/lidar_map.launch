@@ -72,5 +72,5 @@
 <!--    <node pkg="grid_map_visualization" type="grid_map_visualization" name="grid_map_visualization" output="screen" />-->
 
     <!-- Launch RViz with the demo configuration. -->
-<!--    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find detection)/rviz/grid_map_demo.rviz" />-->
+    <node name="gridmap_rviz" pkg="rviz" type="rviz" args="-d $(find detection)/rviz/grid_map_demo.rviz" />
 </launch>
