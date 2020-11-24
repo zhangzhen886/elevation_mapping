@@ -99,6 +99,10 @@ add_executable(rawmapping ${PROJECT_SOURCE_DIR}/src/rawmapping.cpp)
 target_link_libraries(rawmapping ${catkin_LIBRARIES} ${LIBS})
 include_directories(include ${catkin_INCLUDE_DIRS} )
 
+add_executable(grid_to_occupancy ${PROJECT_SOURCE_DIR}/src/grid_to_occupancy.cpp)
+target_link_libraries(grid_to_occupancy ${catkin_LIBRARIES} ${LIBS})
+include_directories(include ${catkin_INCLUDE_DIRS} )
+
 #add_executable(listenpose ${PROJECT_SOURCE_DIR}/src/listenpose.cpp)
 #target_link_libraries(listenpose ${catkin_LIBRARIES} ${LIBS})
 #include_directories(include ${catkin_INCLUDE_DIRS} )

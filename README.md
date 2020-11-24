@@ -161,6 +161,34 @@ catkin_make
 
 修改`./detection/config/filters_demo_filter_chain.yaml`
 
+### 6. 节点 grid_to_occupancy
+
+根据通行性栅格地图转成占用栅格地图的形式（Occupancygrid）
+
+#### 订阅的话题名称
+* **`grid_sub_topic`** (grid_map_msgs::GridMap) 订阅栅格地图
+
+#### 发布的话题名称
+* **`occupancy_grid_pub_topic`** (nav_msgs::OccupancyGrid) 发布占用栅格地图
+
+#### 参数
+* **`grid_sub_topic`** (string) 订阅栅格地图的话题名称
+
+* **`occupancy_grid_pub_topic`** (string) 发布占用栅格地图的话题名称
+
+* **`elevation_layer`** (string) 栅格图高度图层(gridmap layer)名称
+
+* **`traversability_layer`** (string) 栅格图通行性图层(gridmap layer)名称
+
+* **`data_min`** (float) 通行性最小值
+
+* **`data_max`** (float) 通行性最大值
+  可以通过调整date_min和data_max调整转换后的地图显示效果，计算公式为
+  $$
+  occupancy = \frac{traversability - data_{min}}{data_{max} - data_{min}}
+  $$
+  再转化为0-100的范围值.
+
 ## 效果图
 
 <img alt="node data" src="image/result.png" width="500">

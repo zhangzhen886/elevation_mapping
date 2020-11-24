@@ -17,11 +17,13 @@ std::string traversability_layer;
 std::string grid_sub_topic;
 std::string occupancy_grid_pub_topic;
 
-void Grid2Occupancy(const grid_map_msgs::GridMap& grid_map_message)
+void Grid2occupancy(const grid_map_msgs::GridMap& grid_map_message)
 {
-    grid_map::GridMap& gridMap();
+    ROS_INFO_THROTTLE(10.0, "Grid map visualization received a map (timestamp %f) for visualization.",
+              grid_map_message.info.header.stamp.toSec());
+    grid_map::GridMap gridMap;
     grid_map::GridMapRosConverter::fromMessage(grid_map_message, gridMap);
-    nav_msgs::OccupancyGrid& occupancyGrid();
+    nav_msgs::OccupancyGrid occupancyGrid;
 
     occupancyGrid.header.frame_id = gridMap.getFrameId();
     occupancyGrid.header.stamp.fromNSec(gridMap.getTimestamp());
@@ -42,12 +44,12 @@ void Grid2Occupancy(const grid_map_msgs::GridMap& grid_map_message)
 
     // Occupancy probabilities are in the range [0,127]. Unknown is -1.
     const float cellMin = 0;
-    const float cellMax = 127;
+    const float cellMax = 100;
     const float cellRange = cellMax - cellMin;
 
     for (grid_map::GridMapIterator iterator(gridMap); !iterator.isPastEnd(); ++iterator) {
         float value = (gridMap.at(traversability_layer, *iterator) - data_min) / (data_max - data_min);
-        if (std::isnan(value) || !gridMap.isValid(*iterator))
+        if (std::isnan(value) || (!gridMap.isValid(*iterator, elevation_layer)))
             value = -1;
         else
             value = cellMin + std::min(std::max(0.0f, value), 1.0f) * cellRange;
@@ -77,7 +79,7 @@ int main(int argc, char** argv)
     ros::NodeHandle nh_param("~");
     ReadParameter(nh_param);
 
-    grid_sub = nh.subscribe<grid_map_msgs::GridMap>(grid_sub_topic, 10, Grid2Occupancy);
+    grid_sub = nh.subscribe(grid_sub_topic, 10, Grid2occupancy);
     occupancy_grid_pub = nh.advertise<nav_msgs::OccupancyGrid>(occupancy_grid_pub_topic, 10, true);
 
     // Work with grid map in a loop.
