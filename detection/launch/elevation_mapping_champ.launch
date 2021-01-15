@@ -29,7 +29,7 @@
         <!-- Output topic -->
         <param name="output_topic" value="filtered_map" />
         <!-- Load grid map filter chain configuration -->
-        <rosparam command="load" file="$(find detection)/config/filters_demo_filter_chain.yaml" />
+        <rosparam command="load" file="$(find detection)/config/filters_demo_filter_chain_champ.yaml" />
     </node>
 
     <node pkg="detection" type="grid_to_occupancy" name="grid_to_occupancy" output="screen">
@@ -48,7 +48,7 @@
 <!--    <node pkg="grid_map_visualization" type="grid_map_visualization" name="grid_map_visualization" output="screen" />-->
 
     <!-- Launch RViz with the demo configuration. -->
-    <node if="$(arg rviz)" name="gridmap_rviz" pkg="rviz" type="rviz"
+    <node if="$(arg rviz)" launch-prefix="nice" name="gridmap_rviz" pkg="rviz" type="rviz"
           args="-d $(find detection)/rviz/grid_map_champ.rviz" />
 
 </launch>
