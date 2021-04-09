@@ -2,18 +2,18 @@
 
     <arg name="rviz" default="true"/>
     <arg name="use_sim_time" default="true"/>
+    <arg name="odometry_topic" default="/odom/ground_truth"/>
+    <arg name="global_frame" default="odom"/>
 
     <param name="use_sim_time" value="$(arg use_sim_time)" />
 
     <!-- Get Pointcloud and transform to Gridmap-->
     <node pkg="detection" type="grid_map_test" name="grid_map_test" output="screen" >
         <param name="point_sub_topic" value="/map_points" />
-        <param name="position_sub_topic" value="/odom/ground_truth" />
         <param name="grid_pub_topic" value="/grid_map" />
-        <param name="grid_frame_id" value="/odom" />
-<!--        <param name="point_sub_topic" value="/velodyne_points" />-->
-<!--        <param name="grid_frame_id" value="/velodyne" />-->
-        <param name="point_update" value="false" />
+        <param name="position_sub_topic" value="$(arg odometry_topic)" />
+        <param name="grid_frame_id" value="$(arg global_frame)" />
+        <param name="point_update" value="true" />
         <param name="position_update" value="true" />
         <param name="grid_map_size_x" value="8.0" />
         <param name="grid_map_size_y" value="8.0" />
