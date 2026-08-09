@@ -1,3 +1,6 @@
+
+</think>
+
 # elevation-mapping
 
 ## 介绍
@@ -51,7 +54,7 @@ catkin_make
 * **`odomFrame`** (string) 订阅机器人Odometry的话题名称
 * **`baseFrame`** (string) 订阅机器人本体frame的id
 * **`lidarFrame`** (string) 传感器（雷达）frame的id，涉及坐标转换，与Odometry的frame id保持一致
-* **`cameraFrame`** (string) 传感器（相机）frame的id
+* **`elevation_wait_time`** (int) 测试发布频率等待帧数
 * **`FilterFieldName`** (string) 对相机点云进行直通滤波的通道名称，可选x y z
 * **`setFilterLimitsUp`** (double) 直通滤波上界（单位：m）
 * **`setFilterLimitsDown`** (double) 直通滤波下界（单位：m）
@@ -192,27 +195,3 @@ catkin_make
 ## 效果图
 
 <img alt="node data" src="image/result.png" width="500">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
